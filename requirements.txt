@@ -1,0 +1,6 @@
+llama-index
+psycopg2-binary
+llama-index-llms-huggingface-api
+llama-index-embeddings-huggingface_api
+faker
+SQLAlchemy

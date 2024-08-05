@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  host_postgres:
+    container_name: postgres_container
+    image: postgres:13
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: db_postgres
+    ports:
+      - "5431:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
+
+
+  python-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      host_postgres:
+        condition: service_healthy
+    volumes:
+      - ./sql_llama_test.py:/app/sql_llama_test.py  
+      - ./postgres_file.py:/app/postgres_file.py
+    command: ["python", "/app/sql_llama_test.py"]
+    environment:
+      POSTGRES_HOST: host_postgres
+      POSTGRES_DB: db_postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
